@@ -118,26 +118,26 @@ head, body {
 }
 
 #centeredDown {
-	margin-top: 2%;
-	margin-left: 20.5%;
-	margin-right: 20%;
+	margin-top: 2.5%;
+	margin-left: 25%;
+	margin-right: 25%;
+	width: 50%;
 	margin-bottom: 5%;
+	display: inline-block;
+	text-align: center;
 }
 
 .button {
-	width: 41%;
-	margin-right: 2%;
-	margin-left: 2%;
-	float: left;
-	
+	margin: 3%;
 	padding: 2%;
-	outline: .2vw solid rgba(95, 112, 195, 0.7);
+	outline: .3vw solid rgba(95, 112, 195, 0.7);
 
 	font-family: 'Exo 2', sans-serif;
 	font-size: .875em;
 	text-align: center;
-	color: #98c8d6;
+	color: #8fe9ff;
 	
+	background-image: url("../images/scanline_light.png");
 	background-color: rgba(0,0,0,0.4);
 	transition-timing-function: ease;
 	transition-duration: .5s;
@@ -147,6 +147,7 @@ head, body {
 	
 	cursor: pointer;
 	
+	outline: .3vw solid rgba(205,213,238,0.7);
 	background-color: rgba(57,75,157,0.8);
 	transition-timing-function: ease;
 	transition-duration: .65s;
@@ -154,9 +155,10 @@ head, body {
 
 .bodySect {
 	padding: 5%;
-	outline: .2vw solid rgba(95, 112, 195, 0.7);
+	outline: .3vw solid rgba(95, 112, 195, 0.7);
 
-	background-color: rgba(0,0,0,0.4);
+	background-image: url("../images/scanline_light.png");
+	background-color: rgba(0,0,0,0.5);
 }
 
 .uline {

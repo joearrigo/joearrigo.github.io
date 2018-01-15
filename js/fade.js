@@ -1,8 +1,8 @@
 $(document).ready(function(){
-    $(".fadable").fadeIn();
+    $(".fadable").fadeIn(500);
 	
 	$(".button").click(function(){
-		$(".fadable").fadeOut();
+		$(".fadable").fadeOut(250);
 	});
 	
 });
