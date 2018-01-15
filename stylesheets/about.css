@@ -6,8 +6,6 @@ JoeyCode -->
 IDs -->
 */
 
-
-
 /*
 Classes -->
 */
@@ -15,7 +13,7 @@ Classes -->
 .button {
 	margin: 3%;
 	padding: 2%;
-	outline: .3vw solid rgba(95, 112, 195, 0.7);
+	outline: .3vw solid rgba(0,102,0,0.7);
 
 	font-family: 'Exo 2', sans-serif;
 	font-size: .875em;
@@ -32,26 +30,16 @@ Classes -->
 	
 	cursor: pointer;
 	
-	outline: .3vw solid rgba(205,213,238,0.7);
-	background-color: rgba(57,75,157,0.8);
+	outline: .3vw solid rgba(128,255,128,0.7);
+	background-color: rgba(0,140,0,0.8);
 	transition-timing-function: ease;
 	transition-duration: .65s;
 }
 
 .bodySect {
 	padding: 5%;
-	outline: .3vw solid rgba(95, 112, 195, 0.7);
+	outline: .3vw solid rgba(0,102,0,0.7);
 
 	background-image: url("../images/scanline_light.png");
 	background-color: rgba(0,0,0,0.5);
-}
-
-.hCenter {
-
-	font-family: 'Exo 2', sans-serif;
-	font-size: 1.5em;
-	font-weight: bold;
-	text-align: center;
-	margin-bottom: 0;
-
 }
