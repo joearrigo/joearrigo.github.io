@@ -51,8 +51,13 @@ table {
 JoeyCode -->
 */
 
+html {
+	font-size: 1.75vw;
+}
+
 head, body {
-	/*background-color: #1e2752;*/
+	background-color: #254C71;
+	background-image: url("../images/index_bg_lowres.gif");
 	color: white;
 	
 	top: 0;
@@ -65,10 +70,16 @@ body {
 	background-image: url("../images/index_bg.png");
 	background-size: cover;
 	background-repeat: no-repeat;
-	
+
 }
 
-#header {
+.fadable {
+
+	display:none;
+
+} 
+
+#spacer {
 	/*
 	background-color: rgba(95, 112, 195, 0.7);
 	*/
@@ -81,8 +92,7 @@ body {
 }
 
 #centeredUp {
-	top: 10px;
-	margin-top: 10%;
+	margin-top: auto;
 	margin-left: 20%;
 	margin-right: 20%;
 }
@@ -91,21 +101,20 @@ body {
 	margin-top: 2%;
 	margin-left: 20.5%;
 	margin-right: 20%;
+	margin-bottom: 5%;
 }
 
 .button {
-	width: 41%;
+	width: 40%;
 	margin-right: 2%;
 	margin-left: 2%;
 	float: left;
 	
 	padding: 2%;
-	border: 3px;
-	border-style: solid;
-	border-color: rgba(95, 112, 195, 0.7);
+	outline: 5px solid rgba(95, 112, 195, 0.7);
 
 	font-family: 'Exo 2', sans-serif;
-	font-size: 14pt;
+	font-size: .875em;
 	text-align: center;
 	color: #98c8d6;
 	
@@ -115,6 +124,9 @@ body {
 }
 
 .button:hover {
+	
+	cursor: pointer;
+	
 	background-color: rgba(57,75,157,0.8);
 	transition-timing-function: ease;
 	transition-duration: .65s;
@@ -122,9 +134,7 @@ body {
 
 .bodySect {
 	padding: 5%;
-	border: 5px;
-	border-style: solid;
-	border-color: rgba(95, 112, 195, 0.7);
+	outline: 5px solid rgba(95, 112, 195, 0.7);
 
 	background-color: rgba(0,0,0,0.4);
 }
@@ -136,7 +146,7 @@ body {
 .hCenter {
 
 	font-family: 'Exo 2', sans-serif;
-	font-size: 22pt;
+	font-size: 1.375em;
 	font-weight: bold;
 	text-align: center;
 
