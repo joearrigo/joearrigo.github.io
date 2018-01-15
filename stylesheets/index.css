@@ -56,21 +56,41 @@ html {
 }
 
 head, body {
-	background-color: #254C71;
-	background-image: url("../images/index_bg_lowres.gif");
+	background-color: #d6e4f2;
 	color: white;
 	
 	top: 0;
 	right: 0;
 	left:0;
+	overflow: hidden;
 }
 
-body {
+.main {
 
-	background-image: url("../images/index_bg.png");
-	background-size: cover;
-	background-repeat: no-repeat;
+	background-image: url("../images/scanline.png");
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 10;
+	
+}
 
+.background, .background li, .background { 
+	position: fixed; 
+	left: 0; 
+	top: 0; 
+	overflow: hidden; 
+	height: 100%; 
+	width: 100%; 
+}
+
+.background { 
+	z-index: -50;
+}
+
+.background img { 
+	position: relative; 
 }
 
 .fadable {
@@ -111,7 +131,7 @@ body {
 	float: left;
 	
 	padding: 2%;
-	outline: 5px solid rgba(95, 112, 195, 0.7);
+	outline: .2vw solid rgba(95, 112, 195, 0.7);
 
 	font-family: 'Exo 2', sans-serif;
 	font-size: .875em;
@@ -134,7 +154,7 @@ body {
 
 .bodySect {
 	padding: 5%;
-	outline: 5px solid rgba(95, 112, 195, 0.7);
+	outline: .2vw solid rgba(95, 112, 195, 0.7);
 
 	background-color: rgba(0,0,0,0.4);
 }
