@@ -151,11 +151,15 @@ Classes -->
 
 .bodyText {
 	font-family: 'Source Sans Pro', sans-serif;
-	font-size: 1vw;
+	font-size: 1.2vw;
 	text-align: left;
 }
 
-.bodyBody {
+.bodyContent {
 	max-height: 50vh;
 	overflow: auto;
+}
+
+.italic {
+	font-style: italic;
 }

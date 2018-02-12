@@ -5,7 +5,6 @@
 		<link href="https://fonts.googleapis.com/css?family=Exo+2|Lora|Source+Sans+Pro" rel="stylesheet"> 
 		<link rel="stylesheet" href="stylesheets/base.css">
 		<link rel="stylesheet" href="stylesheets/about.css">
-		<link rel="manifest" href="manifest.json">
 		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="js/fade.js"></script>
@@ -15,15 +14,18 @@
 	</head>
 
 	<body onpageshow="fadeIn()">
-	<img class="background" src="images/about_bg.png">
+	<img class="background" src="images/index_bg.png">
 		<div class="main">
 			<div class="fadable"> 
 				<div id="spacer"></div>
 				<div id="centeredUp">
-					<div class="bodySect">
+					<div class="bodyBox">
 						<p class="hCenter">About Me</p>
-							<div class="bodyBody">
-							<p class="bodyText">&lt;Insert text about myself here&gt;</p>
+						<div class="bodyContent">
+							<img id="portPic" src="images/me_fin.jpg">
+							<div id="bio">
+								<p class="bodyText" id="bioText">&ldquo;I've had a passion for science and technology from an early age and I want to use my knowledge in those areas to contribute to the world around me. I firmly believe that we should all look forward to the future.&rdquo;</p>
+							</div>
 						</div>
 					</div>
 				</div>

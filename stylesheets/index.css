@@ -38,7 +38,7 @@ Classes -->
 	transition-duration: .65s;
 }
 
-.bodySect {
+.bodyBox {
 	padding: 5%;
 	outline: .3vw solid rgba(95, 112, 195, 0.7);
 
