@@ -1,11 +1,37 @@
-<!-- For when editing on windows -->
+<!DOCTYPE html>
 <html>
-
 	<head>
-		<title>{{permalink: /404.html}}</title>
+		<title>Joseph Arrigo: 404</title>
+		<link href="https://fonts.googleapis.com/css?family=Exo+2|Lora|Source+Sans+Pro" rel="stylesheet">
+		<link rel="stylesheet" href="stylesheets/base.css">
+		<link rel="stylesheet" href="stylesheets/about.css">
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="js/fade.js"></script>
+		<script src="js/bgResize.js"></script>
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1" /> 
 	</head>
 
-	<body>
+	<body onpageshow="fadeIn()">
+		<img class="background" src="images/index_bg.png">
+		<div class="main">
+			<div class="fadable"> 
+				<div id="spacer"></div>
+				<div id="centeredUp">
+					<div class="bodyBox">
+						<p class="hCenter">Something went wrong!</p>
+						<p class="bodyText" style="text-align: center;">Sorry, but this page doesn't exist :(</br>Try one of the pages below.</p>
+					</div>
+				</div>
+				<div id="centeredDown">
+					<a class="button" href="./about.html">About</a>		
+					<a class="button">Software</a>	
+					<a class="button">Projects</a>
+					<a class="button">Contact Me</a>
+				</div>
+				<div id="spacer"></div>
+			</div>
+		</div>
 	</body>
-
 </html>
