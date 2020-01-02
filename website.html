@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Mass Spectrometer</title>
+</head>
+
+<body style="font-family:sans-serif; font-size:15px; margin-left:10; margin-right:10;">
+<center>
+	<div id="canvasesdiv" style="position:relative; display:block; margin:auto; width:580px; height:540px"></div>
+    <canvas id="myCanvas" style="display: block; position: absolute; margin: 0 auto;display: block;
+        position: absolute; margin: 0 auto; top: 0; bottom: 0; left: 0; right: 0;" width="580" height="540"></canvas>
+    <div id="buttons">
+      <input type="button" id="play" value="Play" onclick="play()">
+      <input type="button" id="pause" value="Pause" onclick="pause()">
+<input type="button" id="stepforward" value="Step <<" onclick="stepBack()">
+      <input type="button" id="stepforward" value="Step >>" onclick="stepForward()">
+      <input type="button" id="reset" value="Reset" onclick="reset()">
+    </div>
+    <div id="modeButtons">
+      <input type="button" id="part1" value="1 - Accelerator" onclick="setMode(1)">
+      <input type="button" id="part2" value="2 - Velocity Selector" onclick="setMode(2)">
+      <input type="button" id="part3" value="3 - Mass Spectrometer" onclick="setMode(3)">
+   </div>
+
+</center>
+
+  <script>
+
+
+      function play() {
+        window.clearTimeout(timer);
+        runFlag = 1;
+        runMotion();
+
+      }
+
+      function pause() {
+        window.clearTimeout(timer);
+        runFlag = 0;
+
+      }
+
+      function stepForward() {
+        window.clearTimeout(timer);
+        runFlag = 1;
+        drawMotion();
+
+      }
+
+      function stepBack() {
+        window.clearTimeout(timer);
+        index = index-2;
+        runFlag = 1;
+        drawMotion();
+        if (index < -1) reset();
+
+      }
+
+
+      function reset() {
+        window.clearTimeout(timer);
+        index = -1;
+        time = 0.0;
+        xPos = xBase + 10;
+        yPos = yBase + 150;
+        vx = 0;
+        vy = 0;
+        EsliderValue = EsliderValueMin + (EsliderValueMax-EsliderValueMin)*(EsliderX-EsliderXMin)/(EsliderXMax-EsliderXMin);
+        EField = EsliderValue;
+EsliderValue2 = EsliderValueMin2 + (EsliderValueMax2-EsliderValueMin2)*(EsliderX2-EsliderXMin2)/(EsliderXMax2-EsliderXMin2);
+        EField2 = EsliderValue2;
+      	QsliderValue = QsliderValueMin + (QsliderValueMax-QsliderValueMin)*(QsliderX-QsliderXMin)/(QsliderXMax-QsliderXMin);
+        charge = QsliderValue;
+	msliderValue = msliderValueMin + (msliderValueMax-msliderValueMin)*(msliderX-msliderXMin)/(msliderXMax-msliderXMin);
+     	mass = msliderValue;
+	BsliderValue = BsliderValueMin + (BsliderValueMax-BsliderValueMin)*(BsliderX-BsliderXMin)/(BsliderXMax-BsliderXMin);
+        BField = BsliderValue;
+BsliderValue2 = BsliderValueMin2 + (BsliderValueMax2-BsliderValueMin2)*(BsliderX2-BsliderXMin2)/(BsliderXMax2-BsliderXMin2);
+        BField2 = BsliderValue2;
+        vsliderValue = vsliderValueMin + (vsliderValueMax-vsliderValueMin)*(vsliderX-vsliderXMin)/(vsliderXMax-vsliderXMin);
+
+        if (mode == 2) vx = vsliderValue;
+    
+  if (mode == 3) {
+         vx = vsliderValue;
+          xPos = 10;
+          yPos = yBase + 25;
+          xPos3 = xPos;
+          yPos3 = yPos;
+          vx3 = vx;
+          vy3 = vy
+        }
+        position[0].x = xPos;
+        position[0].y = yPos;
+        position[0].x3 = xPos3;
+        position[0].y3 = yPos3;
+        runFlag = 1;
+        drawMotion();
+      }
+
+      function setMode(newMode) {
+        mode = Number(newMode);
+        reset();
+      }
+
+
+      var canvas = document.getElementById("myCanvas");
+      var context = canvas.getContext("2d");
+      canvas.onmousedown = myDown;							// mouse event handler for computer browsers
+	  canvas.onmouseup = myUp;								// mouse event handler for computer browsers
+	  canvas.addEventListener("touchstart", myTouchStart, false);	// touch handler for iPhones, iPads, and Androids
+	  canvas.addEventListener("touchmove", myTouchMove, false);	// touch handler for iPhones, iPads, and Androids
+	  canvas.addEventListener("touchend", myTouchEnd, false);		// touch handler for iPhones, iPads, and Androids
+      var myCheck = document.getElementById("myCheck");
+      var index = -1;
+      var xBase = 50;
+      var yBase = 50;
+      var xSupport = canvas.width/2;
+      var ySupport = yBase;
+      var length = 220;
+      var xInit = 37;
+      var radius = 3;
+      var time = 0.0;
+      var deltat = 1/100.0;
+      var mode = 1;
+      var v=100;
+      var BField = 10;  
+      var EField = 1000.0;
+      var BField2 = 50;  
+      var EField2 = 1000.0;
+      var charge = 0.001;
+      var fX = charge*EField;
+      var g = 10;
+//mass=mass/charge
+      var mass = 20;
+      var fY = mass*g;
+      var moverq=mass/charge;
+	var tms=0;
+	var w=2.5;
+      var xPos = xBase + 10;
+      var yPos = yBase + 150;
+      var xPos2 = xBase +10;
+      var yPos2 = yBase +150;
+      var xPos3;
+      var yPos3;
+      var vx = 0.0;
+      var vy = 0.0;
+      var vx2;
+      var vy2;
+      var vx3;
+      var vy3;
+      var timer;
+      var runFlag = 1;
+      
+        var piSymbol = String.fromCharCode(parseInt("03C0",16));	
+
+      var EsliderX = 80;
+      var EsliderY = 420;
+      var EsliderXMin = 30;
+      var EsliderXMax = 230;
+      var EsliderValueMin = 0.0;
+      var EsliderValueMax = 4000.0;
+      var EsliderValue = EField;
+      var EsliderDecimals = 0.0;
+
+      var EsliderX2 = 130;
+      var EsliderY2 = 320;
+      var EsliderXMin2 = 30;
+      var EsliderXMax2 = 230;
+      var EsliderValueMin2 = 0.0;
+      var EsliderValueMax2 = 2000.0;
+      var EsliderValue2 = EField2;
+      var EsliderDecimals2 = 1.0;
+
+
+      var QsliderX = 380;
+      var QsliderY = 420;
+      var QsliderXMin = 340;
+      var QsliderXMax = 540;
+      var QsliderValueMin = 0.0;
+      var QsliderValueMax = 0.05;
+      var QsliderValue = charge;
+      var QsliderDecimals = 3.0;
+
+   var BsliderX = 130;
+      var BsliderY = 470;
+      var BsliderXMin = 30;
+      var BsliderXMax = 230;
+      var BsliderValueMin = 0.0;
+      var BsliderValueMax = 20.0;
+      var BsliderValue = BField;
+      var BsliderDecimals = 0.0;
+
+ var BsliderX2 = 440;
+      var BsliderY2 = 390;
+      var BsliderXMin2 = 340;
+      var BsliderXMax2 = 540;
+      var BsliderValueMin2 = 0.0;
+      var BsliderValueMax2 = 100.0;
+      var BsliderValue2 = BField2;
+      var BsliderDecimals2 = 2.0;
+//mass over charge slider defined as mass in examples
+      var msliderX = 440;
+      var msliderY = 470;
+      var msliderXMin = 340;
+      var msliderXMax = 540;
+      var msliderValueMin = 0.0;
+      var msliderValueMax = 40;
+      var msliderValue = mass;
+      var msliderDecimals = 0.0;
+
+
+     var mqsliderX = 440;
+      var mqsliderY = 470;
+      var mqsliderXMin = 340;
+      var mqsliderXMax = 540;
+      var mqsliderValueMin = 0;
+      var mqsliderValueMax = 0.02;
+      var mqsliderValue = moverq;
+      var mqsliderDecimals = 4.0;
+
+// CHANGE VSLIDER POSITION
+      var vsliderX = 440;
+      var vsliderY = 520;
+      var vsliderXMin = 340;
+      var vsliderXMax = 540;
+      var vsliderValueMin =0.0;
+      var vsliderValueMax = 200.0;
+      var vsliderValue = vx;
+      var vsliderDecimals = 0.0;
+
+      var arraySize = 10001;
+      var position = new Array(arraySize);
+        for (var i = 0; i < arraySize; i++) {
+         position[i] = {};
+         position[i].x = xPos;
+         position[i].y = yPos;
+	 position[i].x2 = xPos;
+         position[i].y2 = yPos;
+         position[i].x3 = xPos;
+         position[i].y3 = yPos;
+        }
+
+
+      drawMotion();
+
+    function drawMotion() {
+
+  //    console.log("In the drawMotion function, with runFlag = " + runFlag );
+
+      //if ((time >= 100.0)) runFlag = 0;
+	//added to stop motion
+ if ((yPos >= 350) || (time >= 100.0) || (yPos<=50)) runFlag = 0;
+  //    console.log("In the drawMotion function, with runFlag = " + runFlag + " xPos = " + xPos + " time = " + time + " yPos = " + yPos);
+
+      if (runFlag == 1) {    //      run if runFlag equal 1, not if equal 0
+        // clear
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // set background color for the entire thing
+           context.fillStyle = "#ffd";
+           context.fillRect(0, 0, canvas.width, canvas.height);
+
+
+           index = index + 1;
+           time = index/100.0;
+	
+   //        console.log(index + "  time = " + time + " x = " + xPos + " y = " + yPos);
+
+           if (mode == 1) {    // Acceleration
+var iatitle = 'Ion Accelerator';
+        context.font = '24pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'black';
+        context.fillText(iatitle, xBase+150, yBase-20);
+
+var attrib = 'Charge Attributes ';
+        context.font = '16pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'black';
+        context.fillText(attrib, xBase + 320, yBase+370);
+
+       // draw velocity slider
+       // draw EField slider
+
+           drawSlider(EsliderX, EsliderY, EsliderXMin, EsliderXMax, EsliderValueMin, EsliderValueMax, EsliderValue, EsliderDecimals);
+           var sLabel = 'Electric field = ';
+           sLabel = sLabel + EsliderValue.toFixed(EsliderDecimals) + ' N/C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,EsliderXMin+0.5*(EsliderXMax-EsliderXMin), EsliderY-25);
+/*
+//draw Qslider
+        drawSlider(QsliderX, QsliderY, QsliderXMin, QsliderXMax, QsliderValueMin, QsliderValueMax, QsliderValue, QsliderDecimals);
+           var sLabel = 'Electric charge = ';
+           sLabel = sLabel + QsliderValue.toFixed(QsliderDecimals) + 'C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,QsliderXMin+0.5*(QsliderXMax-QsliderXMin), QsliderY-25);
+*/
+//draw m over qslider
+        drawSlider(msliderX, msliderY, msliderXMin, msliderXMax, msliderValueMin, msliderValueMax, msliderValue, msliderDecimals);
+           var sLabel = 'mass/charge = ';
+           sLabel = sLabel + msliderValue.toFixed(msliderDecimals) + ' E-9  kg/C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,msliderXMin+0.5*(msliderXMax-msliderXMin), msliderY-25);
+//draw vslider
+/*
+      drawSlider(vsliderX, vsliderY, vsliderXMin, vsliderXMax, vsliderValueMin, vsliderValueMax, vsliderValue, vsliderDecimals);
+           sLabel = 'vx = ';
+           sLabel = sLabel + vsliderValue.toFixed(vsliderDecimals) + ' m/s';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,vsliderXMin+0.5*(vsliderXMax-vsliderXMin), vsliderY-25);
+*/
+                // draw the field lines
+             var maxVectors = 0.003*EField;
+             var spaceBetweenVectors = 300/maxVectors;
+             for (var i = 0; i <= maxVectors; i++) {
+                drawArrow(49,0,xBase,yBase +5+i*spaceBetweenVectors,"black");   // draw electric field arrows
+
+             }
+
+               // draw the two plates
+              context.strokeStyle = "red";
+             context.lineWidth = 8;
+             context.beginPath();
+             context.moveTo(xBase, yBase);
+             context.lineTo(xBase, yBase+135);
+             context.stroke();
+             context.beginPath();
+             context.moveTo(xBase, yBase+165);
+             context.lineTo(xBase, yBase+300);
+             context.stroke();
+
+             context.strokeStyle = "black";
+             context.lineWidth = 8;
+             context.beginPath();
+             context.moveTo(xBase+250, yBase);
+             context.lineTo(xBase+250, yBase+135);
+             context.stroke();
+             context.beginPath();
+             context.moveTo(xBase+250, yBase+165);
+             context.lineTo(xBase+250, yBase+300);
+             context.stroke();
+
+              // draw the charge
+             context.fillStyle = 'red';
+             context.beginPath();
+             context.arc(xPos,yPos, 3*radius, 0, 2 * Math.PI, false);
+             context.fill();
+context.fillStyle = 'black';
+		context.fillText("+", xPos,yPos);
+
+             drawArrow (vx/20,0,xPos,yPos,"black");
+		xPosref= xPos-60;
+             // update the position
+
+// mass = mass/charge
+           // fX = charge*EField;
+	    //a=fX/mass;
+		a= EField/mass;	    
+		t2=(time)*(time);
+
+	
+	if (xPos < (xBase + 250)) {
+	xPos = xBase + 10 + 0.5*a*t2;
+	vx = a*(time);}
+	
+            xPos = xPos + vx*deltat;
+
+	if (xPos>600) {
+	runFlag= 0;}
+	
+// show t and x values
+	context.fillStyle = 'black';
+      var timeLabel = 't = ';
+        timeLabel = timeLabel + (time.toFixed(2)) + ' E-6 s';
+        context.textAlign = 'left';
+        context.fillText(timeLabel, xBase, 470);
+
+
+       // context.fillStyle = 'black';
+       // var xPosref = (xPos + vx*time);
+        var xPosrefLabel = 'x = ';
+        xPosrefLabel = xPosrefLabel + xPosref.toFixed(1) + ' mm';
+        context.textAlign = 'left';
+        context.fillText(xPosrefLabel, xBase, 510);
+
+	var vxLabel = 'vx = ';
+        vxLabel = vxLabel + vx.toFixed(1) + ' km/s';
+        context.textAlign = 'left';
+        context.fillText(vxLabel, xBase+120, 510);
+
+
+           }  // end mode 1 (acceleration)
+
+           if (mode == 2) {    // Velocity selection
+//Title
+
+var vstitle = 'Velocity Selector';
+        context.font = '24pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'black';
+        context.fillText(vstitle, xBase+150, yBase-20);
+var attrib = 'Charge Attributes ';
+        context.font = '16pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'black';
+        context.fillText(attrib, xBase + 320, yBase+370);
+
+       // draw velocity slider
+
+           drawSlider(vsliderX, vsliderY, vsliderXMin, vsliderXMax, vsliderValueMin, vsliderValueMax, vsliderValue, vsliderDecimals);
+           sLabel = 'Initial vx = ';
+           sLabel = sLabel + vsliderValue.toFixed(vsliderDecimals) + ' km/s';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,vsliderXMin+0.5*(vsliderXMax-vsliderXMin), vsliderY-25);
+/*
+//draw Qslider
+        drawSlider(QsliderX, QsliderY, QsliderXMin, QsliderXMax, QsliderValueMin, QsliderValueMax, QsliderValue, QsliderDecimals);
+           var sLabel = 'Electric charge = ';
+           sLabel = sLabel + QsliderValue.toFixed(QsliderDecimals) + 'C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,QsliderXMin+0.5*(QsliderXMax-QsliderXMin), QsliderY-25);
+*/
+//draw moverqslider
+        drawSlider(msliderX, msliderY, msliderXMin, msliderXMax, msliderValueMin, msliderValueMax, msliderValue, msliderDecimals);
+           var sLabel = 'mass/charge = ';
+           sLabel = sLabel + msliderValue.toFixed(msliderDecimals) + '  E-9 kg/C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,msliderXMin+0.5*(msliderXMax-msliderXMin), msliderY-25);
+
+// draw EField slider
+
+           drawSlider(EsliderX, EsliderY, EsliderXMin, EsliderXMax, EsliderValueMin, EsliderValueMax, EsliderValue, EsliderDecimals);
+           var sLabel = 'Electric field = ';
+           sLabel = sLabel + EsliderValue.toFixed(EsliderDecimals) + ' N/C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,EsliderXMin+0.5*(EsliderXMax-EsliderXMin), EsliderY-25);
+
+// draw Bfield slider
+
+   drawSlider(BsliderX, BsliderY, BsliderXMin, BsliderXMax, BsliderValueMin, BsliderValueMax, BsliderValue, BsliderDecimals);
+           var sLabel = 'Magnetic field = ';
+           sLabel = sLabel + BsliderValue.toFixed(BsliderDecimals) + '  mT';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,BsliderXMin+0.5*(BsliderXMax-BsliderXMin), BsliderY-25);
+
+                // draw the field lines
+             var EField2 = 20.0;
+             //var BField =  10.0;
+             maxVectors = 0.3*EField2;
+             spaceBetweenVectors = 500/maxVectors;
+             for (var i = 0; i <= maxVectors; i++) {
+                drawArrow(0,-52,xBase+i*spaceBetweenVectors,yBase + 15,"black");   // draw electric field arrows
+
+             }
+
+               // draw the two plates
+             context.strokeStyle = "red";
+             context.lineWidth = 8;
+             context.beginPath();
+             context.moveTo(xBase, yBase +15);
+             context.lineTo(xBase+500, yBase +15);
+             context.stroke();
+
+             context.strokeStyle = "black";
+             context.lineWidth = 8;
+             context.beginPath();
+             context.moveTo(xBase, yBase+280);
+             context.lineTo(xBase+500, yBase+280);
+             context.stroke();
+
+             //draw the x's to show the magnetic field
+             context.fillStyle = "#ff66ff";
+             context.textAlign = 'center';
+             for (var i=0; i<=9; i++) {
+               for (var j=0; j<=4; j++) {
+                 context.fillText("x", xBase+25+50*i, yBase+45+50*j);
+                }
+              }
+
+               // draw a reference line
+             context.strokeStyle = "grey";
+             context.lineWidth = 2;
+             context.beginPath();
+             context.moveTo(0, yBase+150);
+             context.lineTo(canvas.width, yBase+150);
+             context.stroke();
+
+             // draw the path
+             context.lineWidth = 2;
+             context.strokeStyle = "red";
+             context.beginPath();
+             context.moveTo(position[0].x,position[0].y);
+             for (var i = 1; i < index; i++) {
+               context.lineTo(position[i].x,position[i].y);
+             }
+             context.stroke();
+
+              // draw the charge
+             context.fillStyle = 'red';
+             context.beginPath();
+             context.arc(xPos,yPos, 3*radius, 0, 2 * Math.PI, false);
+             context.fill();
+context.fillStyle = 'black';
+		context.fillText("+", xPos,yPos);
+
+                //   draw the free-body diagram
+             drawArrow (0,-charge*EField,xPos,yPos,"black");   // electric force
+             drawArrow (charge*vy*BField/200,charge*vx*BField,xPos,yPos,"#ff66ff");   // magnetic force
+
+/*
+             //  original update the position
+            fX = charge*vy*BField/10;
+            if (xPos < (xBase + 500)) vx = vx + fX*deltat/50.0;
+            fY = charge*EField2-charge*vx*BField;
+            xPos = xPos + 10*vx*deltat;
+            if (xPos < (xBase + 500)) vy = vy + fY*deltat/5.0;
+            yPos = yPos + vy*deltat;
+            position[index+1].x = xPos;
+            position[index+1].y = yPos;
+*/
+   //  new update the position
+		fX = 0;
+		//mass =mass/charge
+            //if (xPos < (xBase + 500)) vx = vx;
+           ay = EField/mass-vx*BField/mass;
+	    // ay=fY / mass;
+
+	    t2=time * time;       
+           // if (xPos < (xBase + 500))         
+	    xPos = (xBase +10) +  vx*time;
+            vy = ay*(time);
+vyneg=-1*vy;
+	    yPos = (yBase + 150) + .5*ay*t2;
+		//yPos = (yBase + 150) + vy*(time);
+yPosref=200-yPos;
+xPosref=xPos-60;
+
+if ((yPos< yBase + 15) || (yPos> yBase +270)){
+runFlag = 0;}
+	//if (yPos > (yBase + 300)) {vy=0;
+	//yPos=(yBase + 300); xPos=xPos; vx=0}
+      if ( xPos > 550) {ay=0; vy=vy +ay*time;}
+if (xPos > 590){runFlag = 0;}   
+  position[index+1].x = xPos;
+           position[index+1].y = yPos;
+
+
+// show t and x values
+	context.fillStyle = 'black';
+      var timeLabel = 't = ';
+        timeLabel = timeLabel + time.toFixed(2) + 'E-6s';
+        context.textAlign = 'left';
+        context.fillText(timeLabel, xBase+35, 510);
+
+
+       // context.fillStyle = 'black';
+       // var xPos2 = (xPos2 + vx*time);
+        var xPosrefLabel = 'x = ';
+        xPosrefLabel = xPosrefLabel + xPosref.toFixed(0) + ' mm';
+        context.textAlign = 'left';
+        context.fillText(xPosrefLabel, xBase-40, 360);
+
+  var yPosrefLabel = 'y = ';
+        yPosrefLabel = yPosrefLabel + yPosref.toFixed(0) + ' mm';
+        context.textAlign = 'left';
+        context.fillText(yPosrefLabel, xBase+90, 360);
+
+	var vxLabel = 'vx = ';
+        vxLabel = vxLabel + vx.toFixed(0) + ' km/s';
+        context.textAlign = 'left';
+        context.fillText(vxLabel, xBase+230, 360);
+var vyneglabel
+var vynegLabel = 'vy = ';
+        vynegLabel = vynegLabel + vyneg.toFixed(0) + ' km/s';
+        context.textAlign = 'left';
+        context.fillText(vynegLabel, xBase+390, 360);
+
+
+           }  // end mode 2 (velocity selection)
+
+         
+  if (mode == 3) {    // mass separation
+
+/*
+               // draw the region of field
+
+             context.fillStyle = "#afa";
+             context.fillRect(xBase+100, yBase, 200, 400);
+*/
+/*
+ // draw the dees
+           context.fillStyle = "#4ff";
+           context.beginPath();
+           context.arc(xBase+345, yBase+100, 90, -0.5 * Math.PI, 0.5 * Math.PI, false);
+           context.fill();
+           context.lineWidth = 1;
+           context.strokeStyle = '#000000';
+           context.stroke();
+
+context.fillStyle = "#ffd"
+           context.beginPath();
+           context.arc(xBase+345, yBase+100, 60, -0.5 * Math.PI, 0.5 * Math.PI, false);
+           context.fill();
+           context.stroke();
+           context.fillStyle = 'black';
+
+*/
+
+
+             //draw the o's to show the magnetic field
+             context.fillStyle = "#ff66ff";
+             context.textAlign = 'center';
+             for (var i=0; i<=4; i++) {
+               for (var j=0; j<=7; j++) {
+                 context.fillText("o", xBase+100+250+40*i, yBase-35+40*j);
+
+                }
+              }
+
+     // draw the  detector
+
+//outline
+  context.strokeStyle = "blue";
+             context.lineWidth = 3;
+             context.beginPath();
+             context.moveTo(xBase+340, yBase-50);
+             context.lineTo(xBase+340, yBase+10);
+             context.stroke();
+             context.beginPath();
+             context.moveTo(xBase+340, yBase+40);
+             context.lineTo(xBase+340, yBase+270);
+             context.stroke();
+
+  context.strokeStyle = "blue";
+             context.lineWidth = 3;
+             context.beginPath();
+             context.moveTo(xBase+528, yBase-50);
+             context.lineTo(xBase+528, yBase+270);
+             context.stroke();
+ 
+context.strokeStyle = "blue";
+             context.lineWidth = 3;
+             context.beginPath();
+             context.moveTo(xBase+340, yBase+270);
+             context.lineTo(xBase+530, yBase+270);
+             context.stroke();
+   /*         
+//box
+             context.fillStyle = "blue";
+             context.beginPath();
+             context.fillRect(xBase+340, yBase+140, 200, 60);
+             //context.fillRect(xBase+400, yBase+160, 30, 30);
+*/
+        // hide the charges once they come out
+
+           context.fillStyle = "#ffd";
+           context.beginPath();
+           context.fillRect(0, yBase+290, 100, 90);
+		
+             // draw the paths
+
+             context.lineWidth = 2;
+             context.strokeStyle = "red";
+             context.beginPath();
+             context.moveTo(position[0].x,position[0].y);
+             for (var i = 1; i < index; i++) {
+               context.lineTo(position[i].x,position[i].y);
+             }
+             context.stroke();
+             context.beginPath();
+             context.moveTo(position[0].x3,position[0].y3);
+             for (i = 1; i < index; i++) {
+               context.lineTo(position[i].x3,position[i].y3);
+             }
+             context.stroke();
+
+
+              // draw the charges
+        /*    
+	 context.fillStyle = 'red';
+             context.beginPath();
+             context.arc(xPos,yPos, 3*radius, 0, 2 * Math.PI, false);
+             context.fill();
+*/
+             context.fillStyle = 'red';
+             context.beginPath();
+             context.arc(xPos,yPos, 3*radius, 0, 2 * Math.PI, false);
+             context.fill();
+		context.fillStyle = 'black';
+		context.fillText("+", xPos,yPos);
+
+/*
+               // draw the two plates
+              context.strokeStyle = "red";
+             context.lineWidth = 8;
+             context.beginPath();
+             context.moveTo(xBase-45, yBase-50);
+             context.lineTo(xBase-45, yBase+5);
+             context.stroke();
+             context.beginPath();
+             context.moveTo(xBase-45, yBase+40);
+             context.lineTo(xBase-45, yBase+140);
+             context.stroke();
+
+             context.strokeStyle = "black";
+             context.lineWidth = 8;
+             context.beginPath();
+             context.moveTo(xBase+145, yBase-50);
+             context.lineTo(xBase+145, yBase+10);
+             context.stroke();
+             context.beginPath();
+             context.moveTo(xBase+145, yBase+40);
+             context.lineTo(xBase+145, yBase+140);
+             context.stroke();
+
+EField2 = EsliderValue2
+    // draw the field lines
+             var maxVectors = 0.003*EField2;
+             var spaceBetweenVectors = 300/maxVectors;
+             for (var i = 0; i <= maxVectors; i++) {
+                drawArrow(32,0,xBase-20,yBase-150+i*spaceBetweenVectors,"#afa"); 
+	}  
+// draw electric field arrows
+*/
+
+//velocity selector section
+             // draw the field lines
+            // var EField2 = 20.0;
+             //var BField =  10.0;
+             maxVectors = 0.003*EField;
+             spaceBetweenVectors = 170/maxVectors;
+             for (var i = 0; i <= maxVectors; i++) {
+                drawArrow(0,-48,xBase+160+i*spaceBetweenVectors,yBase-100,"black");   // draw electric field arrows
+
+             }
+
+               // draw the two plates
+             context.strokeStyle = "red";
+             context.lineWidth = 8;
+             context.beginPath();
+             context.moveTo(xBase+150, yBase-50);
+             context.lineTo(xBase+340, yBase-50);
+             context.stroke();
+
+             context.strokeStyle = "black";
+             context.lineWidth = 8;
+             context.beginPath();
+             context.moveTo(xBase+150, yBase+140);
+             context.lineTo(xBase+340, yBase+140);
+             context.stroke();
+
+             //draw the x's to show the magnetic field
+             context.fillStyle = "#ff66ff";
+             context.textAlign = 'center';
+             for (var i=0; i<=3; i++) {
+               for (var j=0; j<=3; j++) {
+                 context.fillText("x", xBase+160+50*i, yBase-35+50*j);
+
+                }
+              }
+/*
+               // draw a reference line
+             context.strokeStyle = "grey";
+             context.lineWidth = 2;
+             context.beginPath();
+             context.moveTo(15, yBase+ 25);
+             context.lineTo(xBase+340, yBase+25);
+             context.stroke();
+
+*/
+          
+//Title
+var mstitle = 'Mass Spectrometer';
+        context.font = '24pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'black';
+        context.fillText(mstitle, xBase+10, yBase+180);
+/*
+var detect = 'Detector';
+        context.font = '16pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'white';
+        context.fillText(detect, xBase+400, yBase+180);
+*/
+
+           
+var massdef = 'Mass Deflector Controls ';
+        context.font = '16pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'black';
+        context.fillText(massdef, xBase + 280, yBase+290);
+
+var velsel = 'Velocity Selector Controls ';
+        context.font = '16pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'black';
+        context.fillText(velsel, xBase - 20, yBase+320);
+
+var attrib = 'Charge Attributes ';
+        context.font = '16pt Calibri';
+context.textAlign = 'left';
+	context.fillStyle = 'black';
+        context.fillText(attrib, xBase + 320, yBase+370);
+
+// draw EField slider
+
+           drawSlider(EsliderX, EsliderY, EsliderXMin, EsliderXMax, EsliderValueMin, EsliderValueMax, EsliderValue, EsliderDecimals);
+           var sLabel = 'Electric field 1 = ';
+           sLabel = sLabel + EsliderValue.toFixed(EsliderDecimals) + ' N/C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,EsliderXMin+0.5*(EsliderXMax-EsliderXMin), EsliderY-25);
+
+// draw Bfield slider
+
+   drawSlider(BsliderX, BsliderY, BsliderXMin, BsliderXMax, BsliderValueMin, BsliderValueMax, BsliderValue, BsliderDecimals);
+           var sLabel = 'Magnetic field = ';
+           sLabel = sLabel + BsliderValue.toFixed(BsliderDecimals) + ' mT';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,BsliderXMin+0.5*(BsliderXMax-BsliderXMin), BsliderY-25);
+
+
+
+
+// draw Bfield2 slider
+
+   drawSlider(BsliderX2, BsliderY2, BsliderXMin2, BsliderXMax2, BsliderValueMin2, BsliderValueMax2, BsliderValue2, BsliderDecimals2);
+           var sLabel = 'Magnetic field 2= ';
+           sLabel = sLabel + BsliderValue2.toFixed(BsliderDecimals2) + ' mT';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,BsliderXMin2+0.5*(BsliderXMax2-BsliderXMin2), BsliderY2-25);
+/*
+//draw Qslider
+        drawSlider(QsliderX, QsliderY, QsliderXMin, QsliderXMax, QsliderValueMin, QsliderValueMax, QsliderValue, QsliderDecimals);
+           var sLabel = 'Electric charge = ';
+           sLabel = sLabel + QsliderValue.toFixed(QsliderDecimals) + 'C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,QsliderXMin+0.5*(QsliderXMax-QsliderXMin), QsliderY-25);
+*/
+
+// mass/charge
+//draw mslider
+        drawSlider(msliderX, msliderY, msliderXMin, msliderXMax, msliderValueMin, msliderValueMax, msliderValue, msliderDecimals);
+           var sLabel = 'mass/charge = ';
+           sLabel = sLabel + msliderValue.toFixed(msliderDecimals) + ' E-9 kg/C';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,msliderXMin+0.5*(msliderXMax-msliderXMin), msliderY-25);
+
+// draw velocity slider
+
+           drawSlider(vsliderX, vsliderY, vsliderXMin, vsliderXMax, vsliderValueMin, vsliderValueMax, vsliderValue, vsliderDecimals);
+           sLabel = 'Initial vx = ';
+           sLabel = sLabel + vsliderValue.toFixed(vsliderDecimals) + ' km/s';
+           context.font = '14pt Calibri';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           context.fillStyle = 'black';
+           context.fillText(sLabel,vsliderXMin+0.5*(vsliderXMax-vsliderXMin), vsliderY-25);
+
+             // update the position
+//correct position to 0,0 and y velocity to negative
+ xPos3ref = xPos - 10;
+	   yPos3ref = 75 - yPos; 
+	    vyref=-1* vy;
+//accelerator section
+//mass=mass/charge
+  //fX = charge*EsliderValue2;
+	  // a=fX/mass; 
+	//  a=EField2/mass;  
+	  
+ t2=time*time;	
+	    if (xPos <= 200) {
+//vx = a*time;
+	//x =190 in program  I don't know why
+a=0;
+xPos = 10 + vx*time;
+	//xPos3 = 10 + 0.5*a*t2;
+	vx=vx + a*deltat}
+//vx=0;
+/*
+if(xPos<195) {
+drawArrow (vx/20,0,xPos,yPos,"#afa");
+}
+*/
+//velocity selector section
+
+    //   draw the free-body diagram  xmax =380 in program
+if((xPos>200) && (xPos<390)){
+             drawArrow (0,-charge*EField/2,xPos,yPos,"black");   // electric force
+             drawArrow (charge*vy*BField/200,charge*vx*BField/2,xPos,yPos,"#ff66ff");   // magnetic force
+}
+	fX = 0;
+          // fY = charge*EField-charge*vx*BField;
+	    // ay=fY / mass;
+	   ay=(EField -vx*BField)/mass;     
+	   t2=time*time;
+            if (xPos > 200) { a=0;
+	    vx = vx +a*deltat ;         
+	    xPos = xPos +  vx*deltat;
+           vy = vy + ay*deltat;
+	    yPos = yPos + vy*deltat;}
+	
+        position[index+1].x = xPos;
+          position[index+1].y = yPos;
+//mass spec section
+// force arrow
+	//fX = -charge*vy*BField2;
+	  //  fY = charge*vx*BField2;
+//fres=Math.sqrt(fx*fx+fy*fy);
+if (xPos>392) {
+ // drawArrow 
+//(-charge*vx*BField2/5,charge*vy*BField2/5,xPos,yPos,"#ff66ff");
+ drawArrow
+(-charge*vy*BField2/5,-charge*vx*BField2/5,xPos,yPos,"#ff66ff"); 
+}  
+// magnetic force
+//stopping program if particle goes out of bounds
+if ( (yPos < 60) &&(xPos >= 385) && (xPos <=395) ){ax=0;ay=0;vy=0;vx=0;
+ runFlag = 0;
+	  }
+
+if ((yPos >= 85) &&  (xPos >= 385) && (xPos<=395)){ax=0;ay=0;vy=0;vx=0;
+ runFlag = 0;
+}
+
+if (xPos >600){runFlag=0;
+}
+
+if ((yPos > 200) && (xPos >= 385) && (xPos<=395)) {ax=0;ay=0;vy=0;vx=0;
+ runFlag = 0;
+	  }
+       // correct output values to convention
+          
+//motion
+//mass=mass/charge
+/*
+
+            if (xPos >= 390)
+{ 
+	//mass=mass/charge ratio
+	   //ax=-vy*BField2/mass;
+	   //ay=vx*BField2/mass;
+ax=-150;ay=150;
+xPos = xPos + vx*deltat; yPos = yPos + vy*deltat;
+	    vx = vx + ax*deltat;
+            vy = vy + ay*deltat;     
+}
+ 	xPos3ref = xPos - 10;
+	   yPos3ref = 75 - yPos; 
+	    vyref=-1* vy;
+*/
+//added 0.5 * because radius was double what it shouldbe
+ 	r=(.5*mass*vsliderValue)/BField2;
+          T=(2*3.14159*r/vsliderValue);x=xPos3;y=yPos3;
+           w=2*3.14159/T;
+	v1=vx;tms=0;
+//w=2.5;
+           v=vsliderValue;
+//subtracting time from beginning 
+          if(xPos>=390)  { 
+ vx= v*Math.cos(w*(time-(380/vsliderValue)));
+            vy= v*Math.sin(w*(time-(380/vsliderValue)));
+xPos = xPos + vx*deltat; yPos = yPos + vy*deltat;          
+            }
+
+
+
+	
+             position[index+1].x = xPos;
+             position[index+1].y = yPos;
+            position[index+1].x3 = xPos3;
+             position[index+1].y3 = yPos3;
+
+// show t and x values
+	context.fillStyle = 'black';
+      var timeLabel = 't = ';
+        timeLabel = timeLabel + time.toFixed(2) + 'E-6s';
+        context.textAlign = 'left';
+        context.fillText(timeLabel, xBase+80, 260);
+
+
+       // context.fillStyle = 'black';
+       // var xPos3ref = (xPos3ref + vx*time);
+        var xPos3refLabel = 'x = ';
+        xPos3refLabel = xPos3refLabel + xPos3ref.toFixed(0) + ' mm';
+        context.textAlign = 'left';
+        context.fillText(xPos3refLabel, xBase+10, 290);
+
+  // var yPos3 = (yPos3 + vx*time);
+        var yPos3refLabel = 'y = ';
+        yPos3refLabel = yPos3refLabel + yPos3ref.toFixed(0) + ' mm';
+        context.textAlign = 'left';
+        context.fillText(yPos3refLabel, xBase+10, 330);
+
+	var vxLabel = 'vx = ';
+        vxLabel = vxLabel + vx.toFixed(0) + ' km/s';
+        context.textAlign = 'left';
+        context.fillText(vxLabel, xBase+130, 290);
+
+var vyrefLabel = 'vy = ';
+        vyrefLabel = vyrefLabel + vyref.toFixed(0) + ' km/s';
+        context.textAlign = 'left';
+        context.fillText(vyrefLabel, xBase+130, 330);
+           
+
+           }  // end mode 3 (mass separation)
+
+
+      }
+    }
+
+    function runMotion() {
+        drawMotion();
+        if (runFlag == 1) {
+          timer = window.setTimeout(runMotion, 300/30);
+        }
+      }
+
+    function drawArrow(Fx,Fy,Px,Py, arrowColor) {
+           var theta = Math.atan2(Fy,Fx);
+           context.strokeStyle = arrowColor;
+           context.lineWidth = 4;
+           context.beginPath();
+           context.moveTo(Px, Py);
+           context.lineTo(Px+5*Fx, Py-5*Fy);
+           context.stroke();
+
+           context.lineWidth = 2;
+
+           var Fmag = Math.sqrt(Fx*Fx+Fy*Fy);
+           if (Fmag > 5) Fmag = 5;
+
+           context.fillStyle = arrowColor;
+           context.beginPath();
+           context.moveTo(Px+5*Fx-3*Fmag*Math.cos(theta+0.25*(3.1416/2)),Py-5*Fy+3*Fmag*Math.sin(theta+0.25*(3.1416/2)));
+           context.lineTo(Px+5*Fx,Py-5*Fy);
+           context.lineTo(Px+5*Fx-3*Fmag*Math.cos(theta-0.25*(3.1416/2)),Py-5*Fy+3*Fmag*Math.sin(theta-0.25*(3.1416/2)));
+
+           context.stroke();
+           context.fill();
+
+    }
+
+
+    function drawSlider(sliderX, sliderY, sliderXMin, sliderXMax, sliderValueMin, sliderValueMax, sliderValue, sliderDecimals) {
+
+
+       context.strokeStyle = '#999';
+       context.lineWidth = 8;
+       context.beginPath();
+       context.moveTo(sliderXMin,sliderY);
+       context.lineTo(sliderXMax,sliderY);
+       context.stroke();
+
+       context.strokeStyle = '#44f';
+       context.lineWidth = 8;
+       context.beginPath();
+       context.moveTo(sliderXMin,sliderY);
+       context.lineTo(sliderX,sliderY);
+       context.stroke();
+
+       context.beginPath();
+       context.arc(sliderX, sliderY, 10, 0, 2 * Math.PI, false);
+       context.fillStyle = '#00f';
+       context.fill();
+       context.lineWidth = 1;
+       context.strokeStyle = 'black';
+       context.stroke();
+
+      }
+
+//  Mouse and Touch event functions from  Wolfgang Bauer
+
+function whereClicked(x_,y_,what_) {    // underscore denotes local variables
+	//if (what_ == 'down') {console.log('('+x_+','+y_+')'+what_)};
+//	console.log('('+x_+','+y_+')'+what_);
+//    console.log("x offset = " + charge1X + " y offset = " + charge1Y);
+      if ((Math.abs(x_ - (EsliderX)) < 40) && (Math.abs(y_ - EsliderY) < 40))   // moving the EField slider
+      {
+        EsliderX = x_ ;
+        if (EsliderX < EsliderXMin) EsliderX = EsliderXMin;
+        if (EsliderX > EsliderXMax) EsliderX = EsliderXMax;
+        reset();
+      }
+else if ((Math.abs(x_ - (EsliderX2)) < 40) && (Math.abs(y_ - EsliderY2) < 40))   // moving the EField 2slider
+      {
+        EsliderX2 = x_ ;
+        if (EsliderX2 < EsliderXMin2) EsliderX2 = EsliderXMin2;
+        if (EsliderX2 > EsliderXMax2) EsliderX2 = EsliderXMax2;
+        reset();
+      }
+        else if ((Math.abs(x_ - (BsliderX)) < 40) && (Math.abs(y_ - BsliderY) < 40))   // moving the BField slider
+      {
+        BsliderX = x_ ;
+        if (BsliderX < BsliderXMin) BsliderX = BsliderXMin;
+        if (BsliderX > BsliderXMax) BsliderX = BsliderXMax;
+        reset();
+      }
+  else if ((Math.abs(x_ - (BsliderX2)) < 40) && (Math.abs(y_ - BsliderY2) < 40))   // moving the BField 2slider
+      {
+        BsliderX2 = x_ ;
+        if (BsliderX2 < BsliderXMin2) BsliderX2 = BsliderXMin2;
+        if (BsliderX2 > BsliderXMax2) BsliderX2 = BsliderXMax2;
+        reset();
+      }
+      else if ((Math.abs(x_ - (QsliderX)) < 40) && (Math.abs(y_ - QsliderY) < 40))   // moving the charge slider
+      {
+        QsliderX = x_ ;
+        if (QsliderX < QsliderXMin) QsliderX = QsliderXMin;
+        if (QsliderX > QsliderXMax) QsliderX = QsliderXMax;
+        reset();
+      }
+ 	else if ((Math.abs(x_ - (msliderX)) < 40) && (Math.abs(y_ - msliderY) < 40))   // moving the mass slider
+      {
+        msliderX = x_ ;
+        if (msliderX < msliderXMin) msliderX = msliderXMin;
+        if (msliderX > msliderXMax) msliderX = msliderXMax;
+        reset();
+      }
+      else if ((Math.abs(x_ - (vsliderX)) < 40) && (Math.abs(y_ - vsliderY) < 40))   // moving the VELOCITY slider
+      {
+        vsliderX = x_ ;
+        if (vsliderX < vsliderXMin) vsliderX = vsliderXMin;
+        if (vsliderX > vsliderXMax) vsliderX = vsliderXMax;
+        reset();
+      }
+//        reset();
+//      }
+//      else if ((Math.abs(x_ - (charge2X)) < 15) && (Math.abs(y_ - charge2Y) < 15))  // moving the right-hand charge
+//      {
+//        charge2X = x_ ;
+//        charge2Y = y_ ;
+//        reset();
+//      }
+
+	if (what_ == 'down') {
+//		dragRect = true;
+//		x1 = x_;     // x1, y1 are global variables
+//		y1 = y_;
+	}
+	if (what_ == 'move') {
+//		dragRect = true;
+//		dx = x_-x1;
+//		dy = y_-y1;
+	}
+	if (what_ == 'up') {
+//		dragRect = false;
+//		dx = x_-x1;
+//		dy = y_-y1;
+	}
+}
+
+function myMove(event){
+	var xClick = event.pageX - canvasesdiv.offsetLeft;
+	var yClick = event.pageY - canvasesdiv.offsetTop;
+	whereClicked(xClick,yClick,'move');
+//	drawAll();
+//	drawMotion();
+
+}
+
+function myDown(event){
+	var xClick = event.pageX - canvasesdiv.offsetLeft;
+	var yClick = event.pageY - canvasesdiv.offsetTop;
+	whereClicked(xClick,yClick,'down');
+	canvas.onmousemove = myMove;
+//	drawMotion();
+}
+
+function myUp(event){
+	var xClick = event.pageX - canvasesdiv.offsetLeft;
+	var yClick = event.pageY - canvasesdiv.offsetTop;
+	whereClicked(xClick,yClick,'up');
+	canvas.onmousemove = null;
+//	drawMotion();
+}
+
+function myTouchMove(event){
+	event.preventDefault();
+	var xClick = event.targetTouches[0].pageX - canvasesdiv.offsetLeft;
+	var yClick = event.targetTouches[0].pageY - canvasesdiv.offsetTop;
+	whereClicked(xClick,yClick,'move');
+//	drawMotion();
+}
+
+function myTouchStart(event){
+	event.preventDefault();
+	var xClick = event.targetTouches[0].pageX - canvasesdiv.offsetLeft;
+	var yClick = event.targetTouches[0].pageY - canvasesdiv.offsetTop;
+	whereClicked(xClick,yClick,'down');
+//	drawMotion();
+}
+
+function myTouchEnd(event){
+	event.preventDefault();
+	var xClick = event.targetTouches[0].pageX - canvasesdiv.offsetLeft;
+	var yClick = event.targetTouches[0].pageY - canvasesdiv.offsetTop;
+	whereClicked(xClick,yClick,'up');
+//	drawMotion();
+}
+
+
+  </script>
+
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" rel="dct:type">work</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Andrew Duffy was adapted by Jeff Rodriguez and</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.<br />
+
+
+</body>
+</html>
