@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>404 Page</title>
+	</head>
+	
+	<body>
+		<h1>Error 404: Page not found</h1>
+		<h2>It has either been moved or never existed.</h2>
+		<h3>If it has been moved, you will be redirected to its new location shortly.</h3>
+		
+		<br>
+		
+		<p id="href"></p>
+		
+		<script>
+			document.getElementById("href").innerHTML = "You requested: " + window.location.pathname;
+			if(window.location.pathname.localeCompare("english2.html")){
+				window.locaiton.href = "homework/english2.html";
+			}
+		</script>
+	</body>
+	
+</html>
